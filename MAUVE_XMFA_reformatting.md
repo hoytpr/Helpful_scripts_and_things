@@ -44,7 +44,7 @@ sed can be used on the StripsubsetsLCB output XMFA file:
    
     sed -r 's/^>..* />/' your_xmfa_file.xmfa
 
-I'm not a great coder so please feel free to improve on this one-liner. It seems to work for me.
+I'm not a great coder so please feel free to improve on this one-liner (thanks Dana). It seems to work for me.
 
 Xavier Didelot suggested the following Perl script based on my initial scripting efforts:
     
@@ -54,5 +54,6 @@ It is very likely that
     
     perl -i.bk -wpe's/^>.* />/' your_xmfa_file.xmfa
 
-Will work just as well. 
-That's it!
+Will work just as well. The next step is to [infer clonal geneology]  (https://github.com/xavierdidelot/ClonalOrigin/wiki/Usage#infer-clonal-genealogy)
+which will take several days of compute time, and leave you with a consensus tree.
+
