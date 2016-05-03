@@ -2,7 +2,9 @@
 
 To get an XMFA file that works in [ClonalFrame](https://github.com/xavierdidelot/ClonalFrameML) by Xavier Didelot, 
 the **original** XMFA output from [MAUVE](http://darlinglab.org/mauve/mauve.html) multiple genome alignment software
-will not workMAUVE is maintained by Aaron Darling ("koadman") and it's great software for aligning MANY 
+will not work.
+
+MAUVE is maintained by Aaron Darling ("koadman") and it's great software for aligning MANY 
 bacterial (or smaller) genomes, and can do large genomes as well. The MAUVE output includes a non-standard 
 formatted XMFA file which is difficult to use for downstream genomic recombination analyses. ClonalFrame 
 and [ClonalOrigin](https://github.com/xavierdidelot/ClonalOrigin) are a powerful suite of tools to identify
