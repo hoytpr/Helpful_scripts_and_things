@@ -26,7 +26,7 @@ START:
 It should look something like:
 
      
-     stripSubsetLCBs full_alignment.xmfa full_alignment.xmfa.bbcols core_alignment.xmfa 500
+     **"stripSubsetLCBs full_alignment.xmfa full_alignment.xmfa.bbcols core_alignment.xmfa 500"**
 
 3. the StripsubsetsLCB output new XMFA file (originally from MAUVE) now has all the lines and all lines
 are the correct lengths. However, the header lines often have additional information such as 
