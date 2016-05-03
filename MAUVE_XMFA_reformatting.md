@@ -18,6 +18,7 @@ Second: Get ClonalOrigin and all it's associated programs as described
 [HERE.](https://github.com/xavierdidelot/ClonalOrigin/wiki/Usage) 
 
 START:
+
 1. Align genomes with Progressive Mauve
 
 2. Using the Progressive Mauve outputs, run StripSubsetsLCB as described 
