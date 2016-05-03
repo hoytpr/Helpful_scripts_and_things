@@ -19,6 +19,7 @@ Second: Get ClonalOrigin and all it's associated programs as described
 
 START:
 1. Align genomes with Progressive Mauve
+
 2. Using the Progressive Mauve outputs, run StripSubsetsLCB as described 
 [here](https://github.com/xavierdidelot/ClonalOrigin/wiki/Usage) using the MAUVE output .xmfa and .bbcols files.
    stripSubsetLCBs full_alignment.xmfa full_alignment.xmfa.bbcols core_alignment.xmfa 500
@@ -34,12 +35,17 @@ Below is a short script to remove the genome position numbers up to the organism
     >2:3289121-3291310 + e.anophelisNUHP1.fas
 
 sed can be used on the StripsubsetsLCB output XMFA file:
+   
     sed -r 's/^>..* />/' your_xmfa_file.xmfa
+
 I'm not a great coder so please feel free to improve on this one-liner. It seems to work for me.
 
 Xavier Didelot suggested the following Perl script based on my initial scripting efforts:
+    
     perl -i.bk -wpe's/^>..* -*/>/' your_xmfa_file.xmfa
+
 It is very likely that
     perl -i.bk -wpe's/^>.* />/' your_xmfa_file.xmfa
+
 Will work just as well. 
 That's it!
