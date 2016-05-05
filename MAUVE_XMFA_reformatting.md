@@ -8,7 +8,7 @@ MAUVE is maintained by Aaron Darling ("koadman") and it's great software for ali
 bacterial (or smaller) genomes, and can do large genomes as well. The MAUVE output includes a non-standard 
 formatted XMFA file which is difficult to use for downstream genomic recombination analyses. ClonalFrame 
 and [ClonalOrigin](https://github.com/xavierdidelot/ClonalOrigin) are a powerful suite of tools to identify
-microevolution.  
+microevolution maintained by by Xavier Didelot.  
 
 ###Getting the XMFA file you need.
 
