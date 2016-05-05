@@ -35,14 +35,18 @@ However, the header lines often have additional information such as
 genome position numbers that must be removed, leaving only the organism name (e.g. >S. aureus)
 for downstream analyses.
 
-Below is a short script to remove the genome position numbers up to the organism name, 
 *if and ONLY if*, your headers look like mine (for example):
 
     >2:3289121-3291310 + e.anophelisNUHP1.fas
 
-sed can be used on the StripsubsetsLCB output XMFA file:
+As shown below, sed can be used in short script to remove the genome position numbers 
+up to the organism name on the StripsubsetsLCB output XMFA file:
    
-    sed -r 's/^>..* />/' your_xmfa_file.xmfa
+    sed -r 's/^>.* />/' your_xmfa_file.xmfa
+
+The result header from the example above now would be : 
+
+    >e.anophelisNUHP1.fas
 
 I'm not a great coder so please feel free to improve on this one-liner (thanks Dana). It seems to work for me.
 
