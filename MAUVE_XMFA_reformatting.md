@@ -28,7 +28,7 @@ It should look something like:
      
      **"stripSubsetLCBs full_alignment.xmfa full_alignment.xmfa.bbcols core_alignment.xmfa 500"**
 
-3. the StripsubsetsLCB output new XMFA file (originally from MAUVE) now has only the CORE alignment region
+3. the StripsubsetsLCB output new XMFA file (not the original from MAUVE) now has only the CORE alignment region
 where all the lines and line-lengths are correct. 
 
 However, the header lines often have additional information such as 
