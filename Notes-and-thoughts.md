@@ -20,7 +20,7 @@ bzip2 $WORKDIR/core_co.phase2.$SGE_TASK_ID.xml
 mv $WORKDIR/core_co.phase2.$SGE_TASK_ID.xml.bz2 .
 ```
 
-Whereas on our system we set up different bash script than called a common submission script, For example if the basic submission script was called `generic-clonal.pbs` we would script a bash script to call all the blocks, use each block's number, to be part of the submission script (Thanks to JessieJS for this scripting). But this isn't the point.
+Whereas on our system we set up a different bash script that called a generic submission script, For example if the generic submission script was called `generic-clonal.pbs` we (Thanks to JessieJS for this scripting) wrote a bash script to call all the blocks, and use each block's number, to be part of the submission script. But this isn't the point.
 
 My point is that after submitting thousands of blocks for `warg` analyses very rapidly, a few of the jobs were EXTREMELY slow to run. Most of the 1100+ blocks were finished in a day or 3. But a dozen dragged on for months. 
 
