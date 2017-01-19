@@ -1,3 +1,4 @@
+#Slow running `warg` jobs#
 When submitting the XMFA output file from MAUVE, even after fixing the XMFA tiltes, 
 running stripSubsetLCBs to generate the core_XMFA file, Inferring clonal genealogy three times, 
 running `getClonalTree` on each geneology output, making sure the three trees match, 
@@ -20,7 +21,7 @@ bzip2 $WORKDIR/core_co.phase2.$SGE_TASK_ID.xml
 mv $WORKDIR/core_co.phase2.$SGE_TASK_ID.xml.bz2 .
 ```
 
-Whereas on our system we set up a different bash script that called a generic submission script, For example if the generic submission script was called `generic-clonal.pbs` we (Thanks to JessieJS for this scripting) wrote a bash script to call all the blocks, and use each block's number, to be part of the submission script. But this isn't the point.
+Whereas on our system we set up a bash script which called a generic submission script, For example if the generic submission script was called `generic-clonal.pbs` we (Thanks to JessieJS for this scripting) wrote a bash script to call all the blocks, and use each block's number, to be part of the submission script. But this isn't the point.
 
 My point is that after submitting thousands of blocks for `warg` analyses very rapidly, a few of the jobs were EXTREMELY slow to run. Most of the 1100+ blocks were finished in a day or 3. But a dozen dragged on for months. 
 
