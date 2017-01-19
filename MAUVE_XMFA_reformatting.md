@@ -60,5 +60,6 @@ It is very likely that
 
 Will work just as well. The next step is to [infer clonal geneology]  (https://github.com/xavierdidelot/ClonalOrigin/wiki/Usage#infer-clonal-genealogy)
 which will take several days of compute time, and leave you with a consensus tree.
-See my [Additional thoughts on the clonal Frame analyses] (https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/Notes-and-thoughts.md).
+
+If you find some of your `warg` jobs are running slow, see my [Additional thoughts on the clonal Frame analyses] (https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/Notes-and-thoughts.md).
 
