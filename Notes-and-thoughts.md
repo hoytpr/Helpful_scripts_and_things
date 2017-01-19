@@ -25,7 +25,7 @@ Whereas on our system we set up a bash script which called a generic submission 
 
 My point is that after submitting thousands of blocks for `warg` analyses very rapidly, a few of the jobs were EXTREMELY slow to run. Most of the 1100+ blocks were finished in a day or 3. But a dozen dragged on for months. 
 
-#THE FIX#
+##The Fix##
 
 Those slow jobs are having problems. But you can **stop them, and re-start them**. 
 If you look at their progression (the growing output file) you'll see error messages 
