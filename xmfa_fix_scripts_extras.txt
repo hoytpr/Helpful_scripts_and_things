@@ -1,0 +1,27 @@
+sed 's/find/replace/' 6.eliz.core_alignment.xmfa
+
+
+
+To remove everything except the 1st n characters in every line: 
+sed -r 's/^>[." e*"]//' Test-to-remove-headers.txt
+
+sed -r 's/^>..* -*/>/' Test-to-remove-headers.txt
+
+NOTES:
+You can remove one of the periods with no effect:
+sed -r 's/^>.* -*/>/' Test-to-remove-headers.txt
+
+If you escape the + and add a . you can remove only the headers with positive strands
+sed -r 's/^>.* \+.*/>/' Test-to-remove-headers.txt > tested.txt
+
+If you escape the - and add a . you can remove only the headers with positive strands
+sed -r 's/^>.* \-.*/>/' Test-to-remove-headers.txt > tested.txt
+
+You can escape the space with no effect:
+ sed -r 's/^>.*\ -*/>/' Test-to-remove-headers.txt > tested.txt
+
+Can use +- or -+ also
+sed -r 's/^>.* -+*/>/' Test-to-remove-headers.txt > tested.txt
+sed -r 's/^>.* +-*/>/' Test-to-remove-headers.txt > tested.txt
+
+sed -r 's/.* />/' Also works (Thanks Dana!)
