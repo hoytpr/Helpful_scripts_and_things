@@ -1,0 +1,84 @@
+## The de novo RNAseq tutorial ## 
+"https://github.com/trinityrnaseq/RNASeq_Trinity_Tuxedo_Workshop/wiki/Trinity-De-novo-Transcriptome-Assembly-Workshop" is great. 
+
+In particular, the VM set-up (thanks Brian!) makes running the tutorial a breeze. But eventually, someone will attempt to run this without using a VM. Here are a few oddities and reminders that might be encountered by someone going through this process the first time outside the VM.  The error outputs are your friend here.
+
+1\. Note that many submission scripts start at directory "$TRINITY_HOME" (mine was named "Trinity"). Put your RNAseq files in this directory (e.g. sample1-left.fq, sample1-right.fq...) You should follow the directory structure closely by runnning your commands from this folder, and only from other subdirectories as specified. For example, if you have a reference genome (e.g. <your_genome_reference_file.fa> and <your_genome_reference_file.bed>, put it into a subdirectory of Trinity_home called "GENOME_data", i.e. Trinity/GENOME_data. The starting directory structure is simple, similar to:
+
+ ____________________Trinity____
+|	|			 |
+|	|			 |
+R	trinity_out_dir		GENOME_data
+
+
+   2\. Being barely familiar with Trinity command-line I ran the tutorial on our server but received an error near the end:  
+
+   "Error in calcNormFactors.default(object = object$counts, lib.size = object$samples$lib.size,  :
+  NA counts not permitted
+Calls: calcNormFactors ... calcNormFactors.DGEList -> calcNormFactors -> calcNormFactors.default"
+
+What is **important** to know is re-running the steps will *NOT* overwrite all old files. 
+
+So... *exactly* as Brian says: "running abundance estimation is not being done against a single Trinity assembly. If you made separate assemblies for each condition, you'll want to create a single assembly from the combined reads". In other words *completely delete* old "trinity-<samplename>" and "<samplename>.RSEM" folders, and start over: go back to STEP 1 "De novo assembly of reads using Trinity". 
+
+If you do not delete the old "<samplename>.RSEM" folders. the existing <samplename>.isoforms.results.ok" file will prevent the the existing xxx.isoforms.results and xxx.genes.results files from being overwritten. The same appears to be true for the <samplename>.bowtie.bam.ok" file and the associated <samplename>.bowtie.bam file in the RSEM output directories. (Brian please corect me if this is wrong).
+
+3\. If you are not running the VM, the packages Trinity, bowtie, Tophat etc. may be in different directories on the server (another good reason to  use the VM). Our server sets up modules for queue submission, and sometimes you will need to load more than one module e.g.
+
+    "module load trinity/2.1.1 bowtie2/2.2.6 tophat/2.0.12
+    tophat -I 300 -i 20 genome \"
+
+HOWEVER, At Step 1 "De novo assembly of reads using Trinity", do *not* load any module except Trinity or you will get bowtie errors similar to:
+
+"Error, cannot find path to bowtie () or bowtie-build (), which is now needed as part of Chrysalis' read scaffolding step.  If you should choose to not run bowtie, include the --no_bowtie in your Trinity command."
+
+4\. (Not reccommended) If you feel you must redirect the output from Trinity to a different folder than the STDOUT, the output file must have "trinity" in the outputname to prevent an error, e.g. use "/Applications/Trinity/trinitytest" instead of "/Applications/Trinity/test".
+
+5\. The perl scripts (e.g. "analyze_diff_expr.pl") require linux end-of-line handling. Any perl script or other file pulled off the server into a Windows GUI, should be reformatted when back on the server using e.g. dos2unix. EOL errors may be similar to: 
+
+	"Error in file(filename, "r", encoding = encoding) : 
+  		cannot open the connection
+	 Calls: source -> file"
+
+6\. All perl scripts and R scripts need to be in the correct directory as in the VM. If a script is in the wrong directory (e.g. Trinity/foo/heatmap.3.R). You get an error output such as:
+
+  "Error, cannot open file '<full correct path to default directory with the script>/heatmap.3.R': No such file or directory". 
+
+But modules can cause different errors. Our server has the "align_and_estimate_abundance.pl" set up under the Trinity module, so running 
+
+"module load Trinity
+${TRINITY_HOME}/util/align_and_estimate_abundance.pl --seqType fq \"
+
+fails with file not found error. But running 
+
+"module load Trinity
+align_and_estimate_abundance.pl --seqType fq  \"
+
+worked.   
+
+7\. Keep your fastq filenames with the suffix ".fq"
+
+8\. Your server may or may not have IGV installed. If not, ask them to install it, or intall it on your desktop and download the files you need 
+
+("accepted_hits.bam, trinity_gmap.sorted.bam, <your_genome_reference_file.fa>, and either the <your_genome_reference_file.bed> or <your_genome_reference_file.gff>") 
+
+9\. With servers using modules. The bowtie module was "bowtie2/x.x.x" (note: "bowtie2", not "bowtie").  In the following script from the tutorial:
+
+% ${TRINITY_HOME}/util/align_and_estimate_abundance.pl --seqType fq  \
+      --left RNASEQ_data/Sp_ds.left.fq.gz --right RNASEQ_data/Sp_ds.right.fq.gz \
+      --transcripts trinity_out_dir/Trinity.fasta \
+      --output_prefix Sp_ds --est_method RSEM  --aln_method bowtie \
+      --trinity_mode --prep_reference --output_dir Sp_ds.RSEM
+
+you might have to change "--aln_method bowtie" to "--aln_method bowtie2"
+
+10\. At the "Coordinate-sort the bam file" step, if a trinity_gmap file already exists, you should probably start over. Otherwise if you don't delete trinity_gmap, when running "samtools sort trinity_gmap.bam trinity_gmap" you may not get an error, but you will not update your trinity.gmap file either.   
+
+11\. Script locations:	"PtR" is required in the {TRINITY_HOME} directory (Trinity in my case)
+	"analyze_diff_expr.pl" is required in the {TRINITY_HOME} directory
+	"heatmap.3.R", and "test.heatmap.3.R" should be in Trinity/R/ directory. 
+
+12\. Do not create a separate directory for (e.g.) edgeR output (or other outputs). This can cause  scripts to fail 
+*****************************
+
+12B. If you do create an another edgeR subdirectory under the Trinity home directory, you'll have to place and run "define_clusters_by_cutting_tree.pl", "plot_expression_patterns.pl", and "run_DE_analysis.pl" in the edgeR subdirectory. Also create another "R" subdirectory under your edgeR subdirectory for "heatmap.3.R", and "test.heatmap.3.R". 
