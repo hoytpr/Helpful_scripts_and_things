@@ -1,4 +1,4 @@
-##Slow running `warg` jobs##
+## Slow running `warg` jobs ##
 When submitting the XMFA output file from MAUVE, even after fixing the XMFA tiltes, 
 running stripSubsetLCBs to generate the core_XMFA file, Inferring clonal genealogy three times, 
 running `getClonalTree` on each geneology output, making sure the three trees match, 
