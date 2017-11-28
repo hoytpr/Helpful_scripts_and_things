@@ -1,4 +1,4 @@
-###Intro
+### Intro
 
 To get an XMFA file that works in [ClonalFrame](https://github.com/xavierdidelot/ClonalFrameML) by Xavier Didelot, 
 the **original** XMFA output from [MAUVE](http://darlinglab.org/mauve/mauve.html) multiple genome alignment software
@@ -10,7 +10,7 @@ formatted XMFA file which is difficult to use for downstream genomic recombinati
 and [ClonalOrigin](https://github.com/xavierdidelot/ClonalOrigin) are a powerful suite of tools to identify
 microevolution maintained by by Xavier Didelot.  
 
-###Getting the XMFA file you need.
+### Getting the XMFA file you need.
 
 First: Keep all your files in one directory. It's just easier that way. 
 
@@ -26,7 +26,7 @@ START:
 It should look something like:
 
      
-     **"stripSubsetLCBs full_alignment.xmfa full_alignment.xmfa.bbcols core_alignment.xmfa 500"**
+     ** "stripSubsetLCBs full_alignment.xmfa full_alignment.xmfa.bbcols core_alignment.xmfa 500" **
 
 3. the StripsubsetsLCB output new XMFA file (not the original from MAUVE) now has only the CORE alignment region
 where all the lines and line-lengths are correct. 
