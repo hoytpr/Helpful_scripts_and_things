@@ -42,18 +42,17 @@ HOWEVER, At Step 1 "De novo assembly of reads using Trinity", do *not* load any 
 
 6\. All perl scripts and R scripts need to be in the correct directory as in the VM. If a script is in the wrong directory (e.g. Trinity/foo/heatmap.3.R). You get an error output such as:
 
-  "Error, cannot open file '<full correct path to default directory with the script>/heatmap.3.R': No such file or directory". 
+    "Error, cannot open file '<full correct path to default directory with the script>/heatmap.3.R': No such file or directory". 
 
 But modules can cause different errors. Our server has the "align_and_estimate_abundance.pl" set up under the Trinity module, so running 
 
-"module load Trinity
-${TRINITY_HOME}/util/align_and_estimate_abundance.pl --seqType fq \"
+    "module load Trinity
+    ${TRINITY_HOME}/util/align_and_estimate_abundance.pl --seqType fq \"
 
 fails with file not found error. But running 
 
-"module load Trinity
-align_and_estimate_abundance.pl --seqType fq  \"
-
+    "module load Trinity
+    align_and_estimate_abundance.pl --seqType fq  \"
 worked.   
 
 7\. Keep your fastq filenames with the suffix ".fq"
@@ -64,7 +63,7 @@ worked.
 
 9\. With servers using modules. The bowtie module was "bowtie2/x.x.x" (note: "bowtie2", not "bowtie").  In the following script from the tutorial:
 
-% ${TRINITY_HOME}/util/align_and_estimate_abundance.pl --seqType fq  \
+    %         ${TRINITY_HOME}/util/align_and_estimate_abundance.pl --seqType fq  \
       --left RNASEQ_data/Sp_ds.left.fq.gz --right RNASEQ_data/Sp_ds.right.fq.gz \
       --transcripts trinity_out_dir/Trinity.fasta \
       --output_prefix Sp_ds --est_method RSEM  --aln_method bowtie \
