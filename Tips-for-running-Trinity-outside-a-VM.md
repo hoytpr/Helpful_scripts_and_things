@@ -4,7 +4,7 @@
 In particular, the VM set-up (thanks Brian!) makes running the tutorial a breeze. But eventually, someone will attempt to run this without using a VM. Here are a few oddities and reminders that might be encountered by someone going through this process the first time outside the VM.  The error outputs are your friend here.
 
 1\. Note that many submission scripts start at directory "$TRINITY_HOME" (mine was named "Trinity"). Put your RNAseq files in this directory (e.g. sample1-left.fq, sample1-right.fq...) You should follow the directory structure closely by runnning your commands from this folder, and only from other subdirectories as specified. For example, if you have a reference genome (e.g. <your_genome_reference_file.fa> and <your_genome_reference_file.bed>, put it into a subdirectory of Trinity_home called "GENOME_data", i.e. Trinity/GENOME_data. The starting directory structure is simple, similar to:
-    ![](./img/Trinity-filestructure.png)
+    ![](./img/Trinity_filestructure.png)
 
    2\. Being barely familiar with Trinity command-line I ran the tutorial on our server but received an error near the end:  
 
