@@ -1,0 +1,5 @@
+awk 'BEGIN{FS=",";OFS=","}FNR==NR{a[NR]=$1;next}{$1=a[FNR]}1' Chromosome_column.txt Goatgenomics-comma-Copy.txt > Goatgenomics-comma-Copy-col1-chr.txt
+but it added a LF after the CHR column, so had to remove those:
+
+tr -d '\015' < Goatgenomics-comma-col1-no-LF.txt > Goatgenomics-comma-col1-no-LF-done.txt
+

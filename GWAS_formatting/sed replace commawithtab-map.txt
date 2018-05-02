@@ -1,0 +1,2 @@
+sed -e "s/,/\t/g" < Goat3_bkp.commas.map > Goat3.map
+

@@ -1,0 +1,21 @@
+index=3 
+echo "1,2,3,4" | awk -F, -v OFS=, -v INDEX=$index '{$INDEX="NEW"; print }'
+
+
+index=3 
+echo "1,2,3,4" | sed 's/[^,]*/NEW/'$index
+
+
+$ echo "1,2,3,4" | sed 's/,/\n/g' | sed -e $index's/.*/NEW/'
+
+This is easily extendable to multiple indexes just by adding another -e $newindex's/.*/NEWNEW/'
+
+
+echo "1,2,3,4" | awk -F, -v OFS=, '{$'$index'="NEW"; print }'
+
+-----------------
+I'd use cat rather than echo on the Goat3copycomma.ped file so:
+index=1
+cat Goat3copycomma.ped | awk -F, -v OFS=, '{$'$index'="langston"; print }'
+
+WORKS!

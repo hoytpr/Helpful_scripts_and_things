@@ -1,0 +1,432 @@
+To save space and time, you can make a binary ped file (*.bed). This will store the pedigree/phenotype information in separate file (*.fam) and create an extended MAP file (*.bim) (which contains information about the allele names, which would otherwise be lost in the BED file). To create these files use the command:
+
+plink --file mydata --make-bed
+
+which creates (by default)
+plink.bed ( binary file, genotype information )
+plink.fam ( first six columns of mydata.ped )
+plink.bim ( extended MAP file: two extra cols = allele names)
+The .fam and .bim files are still plain text files: these can be viewed with a standard text editor. Do not try to view the .bed file however: it is a compressed file and you'll only see lots of strange characters on the screen...
+
+http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#bed:
+
+\subsection*{Perform quality control}
+2	\addcontentsline{toc}{subsection}{Perform quality control}
+3	\label{sec:procedureQC}
+4	We assume that the genotypes have been called by a genotyping center
+5	and returned in PLINK format named raw-GWA-data.ped,
+6	raw-GWA-data.map. All genotypes are annotated to the forward
+7	strand. The first step is to perform standard quality control on the
+8	target set. The protocol for quality control is provided by Anderson
+9	\textit{et al}~\cite{Anderson2010}. After performing quality control
+10	of this genome-wide SNP data, \num{1919} samples and \num{313878}
+11	markers remain. The resulting files are named clean-GWA-data.bed,
+12	clean-GWA-data.bim and clean-GWA-data.fam.
+13	
+14	\subsection*{Converting the target set to the correct build (TIMING
+15	  $\sim$\num{20} min)}
+16	%\addcontentsline{toc}{subsection}{Converting the target set to the
+17	%correct build}
+18	If the target set is on another build than the reference set, it is
+19	important to lift the target set over to the same build as the
+20	reference set. The following protocol shows how to convert the target
+21	set from UCSC hg\num{17} (NCBI build \num{35}) to UCSC hg\num{19}
+22	(Genome Reference Consortium GPCh\num{37}).
+23	\begin{boenumerate}
+24	\item First download the chain file:
+25	\begin{lstlisting}[language=bash, frame=none]
+26	 wget http://hgdownload.cse.ucsc.edu/goldenPath/hg17/liftOver/hg17ToHg19.over.chain.gz
+27	\end{lstlisting}
+28	  and type \lstinline{gunzip hg17ToHg19.over.chain.gz} to unzip the
+29	  gzipped chain file.
+30	\item To start the lift over, we need to convert the target set with
+31	  PLINK to a map and ped file:
+32	\begin{lstlisting}[language=bash, frame=none]
+33	plink --noweb --bfile clean-GWA-data --recode --out clean-GWA-data
+34	\end{lstlisting}
+35	  This will create the files clean-GWA-data.map and
+36	  clean-GWA-data.ped.
+37	\item The next step is to create a BED file based on the map file:
+38	\begin{lstlisting}[language=bash, frame=none]
+39	gawk '{$5=$2;$2=$4;$3=$4+1;$1="chr"$1;print $1,$2,$3,$5}' OFS="\t" clean-GWA-data.map > clean-GWA-data_HG17.BED
+40	\end{lstlisting}
+41	\item Then we perform the liftover:
+42	\begin{lstlisting}[language=bash, frame=none]
+43	./liftOver -bedPlus=4 clean-GWA-data_HG17.BED hg17ToHg19.over.chain clean-GWA-data.HG19.BED clean-GWA-data_unmapped.txt
+44	\end{lstlisting}
+45	\item The resulting file clean-GWA-data\_unmapped.txt can be
+46	  used to create a list of unmapped SNPs
+47	\begin{lstlisting}[language=bash, frame=none]
+48	gawk '/^[^#]/ {print $4}' clean-GWA-data_unmapped.txt > clean-GWA-data_unmappedSNPs.txt
+49	\end{lstlisting}
+50	\item A mapping file should be created with the new BED file
+51	\begin{lstlisting}[language=bash, frame=none]
+52	gawk '{print $4, $2}' OFS="\t"  clean-GWA-data.HG19.BED > clean-GWA-data.HG19.mapping.txt
+53	\end{lstlisting}
+54	\item PLINK can be used to remove the unmapped SNPs:
+55	\begin{lstlisting}[language=bash, frame=none]
+56	plink --noweb --file clean-GWA-data --exclude clean-GWA-data_unmappedSNPs.txt --update-map clean-GWA-data.HG19.mapping.txt --recode --out clean-GWA-data.HG19
+57	\end{lstlisting}
+58	\item Create a new SNP list for the data set:
+59	\begin{lstlisting}[language=awk, frame=none]
+60	gawk '{print $2}' clean-GWA-data.HG19.map > clean-GWA-data.HG19.snplist
+61	\end{lstlisting}
+62	\end{boenumerate}
+63	The resulting files after quality control and lifting over the data set
+64	to the correct build, are named clean-GWA-data.HG19.map and
+65	clean-GWA-data.HG19.ped. In this case the data set was lifted
+66	over from build \num{35} to build \num{37}, however, other liftovers
+67	are also possible, the UCSC Genome Browser website provides multiple
+68	chain files.
+69	
+70	\subsection*{Split the target set up in subsets of samples}
+71	%\addcontentsline{toc}{subsection}{Split the target set up in subsets of samples}
+72	If the number of samples in the target set is larger then
+73	\num{1000}, it is possible to split the data set up in subsets of at
+74	least \num{600} samples by dividing the rows of the file
+75	clean-GWA-data.HG19.ped into multiple files. The map file
+76	clean-GWA-data.HG19.map is the same for all subsets.
+77	\begin{lstlisting}[language=bash,frame=none]
+78	chunksize=3;
+79	nrInd=`wc -l clean-GWA-data.HG19.ped | gawk '{print $1}`;
+80	max=`expr $nrInd "+" $chunksize`;
+81	count=1;
+82	for i in $(seq ${chunksize} ${chunksize} ${max}); do
+83	  head -n $i clean-GWA-data.HG19.ped | tail -n ${chunksize} > clean-GWA-data.HG19.chunk${count}.ped;
+84	  cp clean-GWA-data.HG19.map > clean-GWA-data.HG19.chunk${count}.map;
+85	  count=`expr $count "+" 1`;
+86	done
+87	\end{lstlisting}
+88	The resulting files are named clean-GWA-data.HG19.chunk1.map and
+89	clean-GWA-data.HG19.chunk1.ped for chunk \num{1}. The rest of this
+90	protocol does not assume that the target set is split into
+91	subsets. Therefore, when the target set is split into subsets, the
+92	protocol for imputation should be performed for every subset.
+93	
+94	\subsection*{Imputations with MaCH and minimac}
+95	\addcontentsline{toc}{subsection}{Imputations with MaCH and minimac}
+96	\label{sec:impuMaCHminimac}
+97	This pipeline for imputations with MaCH and minimac imputes the
+98	target set after quality control and (if necessary) lifted over to the
+99	correct build with the \num{1000} Genomes Phase I Integrated Release
+100	Version \num{3} Haplotypes.
+101	
+102	\subsubsection*{Download the reference set for minimac (TIMING
+103	  $\sim$\num{15} min)}
+104	\addcontentsline{toc}{subsubsection}{Download the reference set for minimac}
+105	\begin{boenumerate}
+106	  \setcounter{enumi}{8}
+107	\item First create a new directory for the reference set:
+108	  \lstinline{mkdir reference-1000G-v3-MaCH} and
+109	  \lstinline{cd reference-1000G-v3-MaCH}. Download the reference set by:
+110	\begin{lstlisting}[language=bash,frame=none]
+111	wget ftp://share.sph.umich.edu/1000genomes/fullProject/2012.03.14/phase1_release_v3.20101123.snps_indels_svs.genotypes.refpanel.ALL.vcf.gz.tgz
+112	\end{lstlisting}
+113	The next step is to decompress the file:
+114	\begin{lstlisting}[language=bash, frame=none]
+115	tar -xvzf
+116	phase1_release_v3.20101123.snps_indels_svs.genotypes.refpanel.ALL.vcf.gz.tgz
+117	\end{lstlisting}
+118	\item Use VCFtools to create info files for all chromosomes by:
+119	\begin{lstlisting}[language=bash, frame=none]
+120	for chr in `seq 1 22`; do
+121	 vcftools --gzvcf chr${chr}.phase1_release_v3.20101123.snps_indels_svs.genotypes.refpanel.ALL.vcf.gz --get-INFO NS --out chr${chr}.phase1_release_v3.20101123.snps_indels_svs.genotypes.refpanel.ALL;
+122	done
+123	\end{lstlisting}
+124	\item Now create a file with all the positions that are in the
+125	  reference set:
+126	 \begin{lstlisting}[language=bash, frame=none]
+127	for i in chr*.phase1_release_v3.20101123.snps_indels_svs.genotypes.refpanel.ALL.INFO; do
+128	 gawk '$1!="CHROM" {print $1"_"$2}' $i >> ../snps-reference.txt;
+129	done
+130	\end{lstlisting}
+131	  This file will be used later on to create the files for imputations.
+132	\end{boenumerate}
+133	
+134	\subsubsection*{Creating the input files for the imputation (TIMING
+135	  $\sim$\num{5} min)}
+136	\addcontentsline{toc}{subsubsection}{Creating the input files for the imputation}
+137	\begin{boenumerate}
+138	  \setcounter{enumi}{11}
+139	\item To get a list of positions of SNPs that are in the target set
+140	  and/or in the reference set:
+141	\begin{lstlisting}[language=awk, frame=none]
+142	gawk '{print $1"_"$4}' clean-GWA-data.HG19.map >  snps-reference-and-rawdata
+143	\end{lstlisting}
+144	  and
+145	\begin{lstlisting}[language=bash, frame=none]
+146	sort snps-reference.txt | uniq >> snps-reference-and-rawdata
+147	\end{lstlisting}
+148	  To get only those SNPs that are in both the target set and reference
+149	  set:
+150	 \begin{lstlisting}[language=bash, frame=none]
+151	sort snps-reference-and-rawdata | uniq -d | gawk -F "_" '{$3=$2+1; print $1,$2,$3,"R"NR}' > snps-reference-and-rawdata-duplicates
+152	\end{lstlisting}
+153	? TROUBLESHOOTING
+154	\item The names of the SNPs that are in both the target set and in the
+155	  reference set need to be extracted from the target set. Using PLINK
+156	  this can be done as follows:
+157	 \begin{lstlisting}[language=bash, frame=none]
+158	plink --noweb --file clean-GWA-data.HG19 --extract snps-reference-and-rawdata-duplicates --range --make-bed --out clean-GWA-data.HG19.for-impute.plink
+159	\end{lstlisting}
+160	\item MaCH and minimac need one file per chromosome therefore the SNPs
+161	  per chromosome need to be extracted:
+162	 \begin{lstlisting}[language=bash, frame=none]
+163	for chr in `seq 1 22`; do
+164	 plink --bfile clean-GWA-data.HG19.for-impute.plink --chr $chr --recode --out clean-GWA-data.HG19.for-impute.plink.chr${chr};
+165	done
+166	\end{lstlisting}
+167	\item The resulting PLINK sets need to be converted into merlin file
+168	  format since minimac requests this:
+169	\begin{lstlisting}[language=bash, frame=none]
+170	for chr in `seq 1 22`; do
+171	 gawk '{$6=0; print $0}' clean-GWA-data.HG19.for-impute.plink.chr${chr}.ped > clean-GWA-data.HG19.for-impute.merlin.chr${chr}.ped;
+172	 echo "T faket1" > clean-GWA-data.HG19.for-impute.merlin.chr${chr}.dat;
+173	 gawk '$2="M "$2 {print $2}' clean-GWA-data.HG19.for-impute.plink.chr${chr}.map >> clean-GWA-data.HG19.for-impute.merlin.chr${chr}.dat;
+174	 echo "chromosome markername position" > clean-GWA-data.HG19.for-impute.merlin.chr${chr}.map;
+175	 gawk '{print $1, $2, $4}' clean-GWA-data.HG19.for-impute.plink.chr${chr}.map >> clean-GWA-data.HG19.for-impute.merlin.chr\$\{chr\}.map;
+176	 done
+177	\end{lstlisting}
+178	\item The merlin files need to be chunked up in files with 2500
+179	  markers with a 500 marker overlap using the ChunkChromosome tool:
+180	\begin{lstlisting}[language=bash, frame=none]
+181	for chr in `seq 1 22`; do
+182	 ./generic-ChunkChromosome/executables/ChunkChromosome -d clean-GWA-data.HG19.for-impute.merlin.chr${chr}.dat -n 2500 -o 500;
+183	done
+184	\end{lstlisting}
+185	\end{boenumerate}
+186	
+187	\subsubsection*{Using MaCH for phasing (TIMING
+188	  $\sim$\num{15} hours per chunk)}
+189	\addcontentsline{toc}{subsubsection}{Using MaCH for phasing}
+190	\begin{boenumerate}
+191	  \setcounter{enumi}{16}
+192	\item For all chunks, MaCH is used to phase the haplotypes:
+193	\begin{lstlisting}[language=bash, frame=none]
+194	for chunk in chunk*.dat; do
+195	 machfile="${chunk%.*}";
+196	 merlinfile="${machfile#*-}.ped";
+197	 mach1 -d ${chunk} -p ${merlinfile} --rounds 20 --states 200 --phase --interim 5 --sample 5 --compact --prefix ${machfile};
+198	done
+199	\end{lstlisting}
+200	? TROUBLESHOOTING
+201	\end{boenumerate}
+202	
+203	\subsubsection*{Imputation with minimac (TIMING
+204	  $\sim$\num{45} hours per chunk)}
+205	\addcontentsline{toc}{subsubsection}{Imputation with minimac}
+206	\begin{boenumerate}
+207	  \setcounter{enumi}{17}
+208	\item The following commands impute all chunks using minimac:
+209	\begin{lstlisting}[language=bash, frame=none]
+210	for chunk in chunk*.dat; do
+211	 filename1="${chunk%.*}";
+212	 filename2="${filename1#*-}.ped";
+213	 chr=`echo "${filename1##*.}" | sed 's/chr//'`;
+214	 minimac --vcfReference --rs --refHaps reference-1000G-v3-MaCH/chr${chr}.phase1_release_v3.20101123.snps_indels_svs.genotypes.refpanel.ALL.vcf.gz --haps ${filename1}.gz --snps ${filename1}.dat.snps --rounds 5 --states 200 --autoClip autoChunk-clean-GWA-data.HG19.for-impute.merlin.chr${chr}.dat --gzip --phased --probs --prefix ${filename1};
+215	done
+216	\end{lstlisting}
+217	? TROUBLESHOOTING
+218	\end{boenumerate}
+219	
+220	\subsection*{Imputations with IMPUTE\num{2}}
+221	\addcontentsline{toc}{subsection}{Imputations with IMPUTE\num{2}}
+222	This pipeline for imputations with IMPUTE\num{2} imputes the target set
+223	after quality control and (if necessary) lifted over to the correct
+224	build with the \num{1000} Genomes Phase I Integrated Release Version
+225	\num{3} Haplotypes.
+226	
+227	\subsubsection*{Download the reference set for IMPUTE\num{2} (TIMING $\sim$\num{10} min)}
+228	\addcontentsline{toc}{subsubsection}{Download the reference set for IMPUTE\num{2}}
+229	\begin{boenumerate}
+230	  \setcounter{enumi}{8}
+231	\item First create a new directory for the reference set:
+232	  \lstinline{mkdir reference-1KG-IMPUTE2} and
+233	  \lstinline{cd reference-1KG-IMPUTE2}. Download the reference set:
+234	  \lstinline{wget https://mathgen.stats.ox.ac.uk/impute/ALL_1000G_phase1integrated_v3_impute.tgz}.
+235	  The next step is to extract the files from the tar.gz file:
+236	  \lstinline{tar -xvzf  ALL_1000G_phase1integrated_v3_impute.tgz}.
+237	\item Download the legend files:
+238	  \lstinline{wget https://mathgen.stats.ox.ac.uk/impute/ALL_1000G_phase1integrated_v3_annotated_legends.tgz}.
+239	  These files should also be extracted:
+240	  \lstinline{tar -xvzf ALL_1000G_phase1integrated_v3_annotated_legends.tgz}.
+241	\item Now a file can be created with all the SNP names that are in the
+242	  reference set:
+243	\begin{lstlisting}[language=bash, frame=none]
+244	for i in `seq 1 22`; do gunzip -c ALL_1000G_phase1integrated_v3_annotated_legends/ALL_1000G_phase1integrated_v3_chr${i}_impute.legend.gz | gawk -v chr=$i '$5=="SNP" && S1!="id" {print chr"_"$2}' >> ../snps-reference.txt; done
+245	\end{lstlisting}
+246	  This file will be used later on to create input files for imputations.
+247	\end{boenumerate}
+248	
+249	\subsubsection*{Creating the input files for the imputation (TIMING
+250	  $\sim$\num{10} min)}
+251	\addcontentsline{toc}{subsubsection}{Creating the input files for the imputation}
+252	\begin{boenumerate}
+253	  \setcounter{enumi}{11}
+254	\item To get a list of positions of SNPs that are in the target set
+255	  and/or in the reference set:
+256	\begin{lstlisting}[language=awk, frame=none]
+257	gawk '{print $1"_"$4}' clean-GWA-data.HG19.map >  snps-reference-and-rawdata
+258	\end{lstlisting}
+259	  and
+260	\begin{lstlisting}[language=bash, frame=none]
+261	sort snps-reference.txt | uniq >> snps-reference-and-rawdata
+262	\end{lstlisting}
+263	  To get only those SNPs that are in both the target set and reference
+264	  set:
+265	 \begin{lstlisting}[language=bash, frame=none]
+266	sort snps-reference-and-rawdata | uniq -d | gawk -F "_" '{$3=$2+1; print $1,$2,$3,"R"NR}' > snps-reference-and-rawdata-duplicates
+267	\end{lstlisting}
+268	\item The names of the SNPs that are in both the target set and in the
+269	  reference set need to be extracted from the target set. Using PLINK
+270	  this can be done by running:
+271	\begin{lstlisting}[language=bash, frame=none]
+272	plink --noweb --file clean-GWA-data.HG19 --extract snps-reference-and-rawdata-duplicates --range --make-bed --out clean-GWA-data.HG19.for-impute.plink
+273	\end{lstlisting}
+274	\item Since we will phase per chromosome, we split the PLINK file into
+275	  \num{22} files:
+276	\begin{lstlisting}[language=bash, frame=none]
+277	for chr in `seq 1 22`; do
+278	 plink --bfile clean-GWA-data.HG19.for-impute.plink --chr $chr --recode --out clean-GWA-data.HG19.for-impute.plink.chr${chr};
+279	done
+280	\end{lstlisting}
+281	  This creates the following files per chromosome:
+282	  \lstinline+clean-GWA-data.HG19.for-impute.plink.chr${chr}.ped+
+283	  and
+284	  \lstinline+clean-GWA-data.HG19.for-impute.plink.chr${chr}.map+.
+285	\end{boenumerate}
+286	
+287	\subsubsection*{Using SHAPEIT for phasing (TIMING $\sim$1.5 hours per chromosome)}
+288	\addcontentsline{toc}{subsubsection}{Using SHAPEIT for phasing}
+289	\begin{boenumerate}
+290	  \setcounter{enumi}{14}
+291	\item For every chromosome, the haplotypes are phased using SHAPEIT:
+292	\begin{lstlisting}[language=bash, frame=none]
+293	refdir="reference-1KG-IMPUTE2/ALL_1000G_phase1integrated_v3_impute";
+294	for chr in `seq 1 22`; do
+295	 namefile="clean-GWA-data.HG19.for-impute.plink.chr${chr}";
+296	 ./shapeit.v2.r644.linux.x86_64 --input-ped ${namefile}.ped ${namefile}.map --input-map ${refdir}/genetic_map_chr${chr}_combined_b37.txt --output-max ${namefile}.phased --thread 8 --output-log ${namefile}.phased;
+297	done
+298	\end{lstlisting}
+299	\end{boenumerate}
+300	
+301	\subsubsection*{Imputation with IMPUTE\num{2} (TIMING
+302	  $\sim$\num{1} hour per chunk)}
+303	\addcontentsline{toc}{subsubsection}{Imputation with IMPUTE\num{2}}
+304	\begin{boenumerate}
+305	  \setcounter{enumi}{15}
+306	\item For every chromosome the imputations are performed in chunks of
+307	\SI{5}{Mb}:
+308	\begin{lstlisting}[language=bash, frame=none]
+309	refdir="reference-1KG-IMPUTE2/ALL_1000G_phase1integrated_v3_impute";
+310	for chr in `seq 1 22`; do
+311	 namefile="clean-GWA-data.HG19.for-impute.plink.chr${chr}.phased";
+312	 maxPos=`gawk '$1!="position" {print $1}' ${refdir}/genetic_map_chr${chr}_combined_b37.txt | sort -n | tail -n 1`;
+313	 nrChunk=`expr $maxPos "/" 5000000`;
+314	 nrChunk2=`expr $nrChunk "+" 1`;
+315	 start="0";
+316	 for chunk in `seq 1 $nrChunk2`; do
+317	  endchr=`expr $start "+" 5000000`;
+318	  startchr=`expr $start "+" 1`;
+319	  ./impute_v2.2.2_x86_64_static/impute2 -known_haps_g ${namefile}.haps -m ${refdir}/genetic_map_chr${chr}_combined_b37.txt -h ${refdir}/ALL_1000G_phase1integrated_v3_chr${chr}_impute.hap.gz -l ${refdir}/ALL_1000G_phase1integrated_v3_chr${chr}_impute.legend.gz -int $startchr $endchr -Ne 20000 -o ${namefile}.chunk${chunk}.impute2;
+320	  start=$endchr;
+321	 done
+322	done
+323	\end{lstlisting}
+324	\end{boenumerate}
+325	
+326	\subsection*{Imputations with Beagle}
+327	\addcontentsline{toc}{subsection}{Imputations with Beagle}
+328	This pipeline for imputation with Beagle imputes the target set after
+329	quality control and if necessary lifted over to the correct build with
+330	the \num{1000} Genomes Phase I Integrated Release Version \num{3}
+331	Haplotypes.
+332	
+333	\subsubsection*{Download the reference set for Beagle (TIMING
+334	  $\sim$\num{15} min)}
+335	\addcontentsline{toc}{subsubsection}{Download the reference set for Beagle}
+336	\begin{boenumerate}
+337	  \setcounter{enumi}{8}
+338	\item First we create a new directory for the reference set:
+339	\lstinline{mkdir reference-1KG-beagle} and
+340	\lstinline{cd reference-1KG-beagle}. Download the reference set:
+341	\begin{lstlisting}[language=bash, frame=none]
+342	for i in `seq 1 22`; do
+343	 wget http://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes.phase1_release_v3/ALL.chr${i}.phase1_release_v3.20101123.filt.bgl.gz;
+344	 wget http://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes.phase1_release_v3/ALL.chr${i}.phase1_release_v3.20101123.filt.int;
+345	 wget http://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes.phase1_release_v3/ALL.chr${i}.phase1_release_v3.20101123.filt.markers;
+346	done
+347	\end{lstlisting}
+348	\item Now create a file with all the SNP names that are in the
+349	  reference set:
+350	\begin{lstlisting}[language=bash, frame=none]
+351	for i in `seq 1 22`; do
+352	gawk -v chr=$i '{print chr"_"$2}' ALL.chr${i}.phase1_release_v3.20101123.filt.markers >> ../snps-reference.txt;
+353	done
+354	\end{lstlisting}
+355	  This file will be used later on to create input files for imputations.
+356	\end{boenumerate}
+357	
+358	\subsubsection*{Create the input files for the imputation (TIMING
+359	  $\sim$\num{10} min)}
+360	\addcontentsline{toc}{subsubsection}{Create the input files for the
+361	  imputation}
+362	\begin{boenumerate}
+363	\setcounter{enumi}{10}
+364	\item To impute with Beagle, all genotypes should be annotated to the
+365	  forward strand in the target set.
+366	\item To get a list of positions of SNPs that are in the target set
+367	  and/or in the reference set:
+368	\begin{lstlisting}[language=awk, frame=none]
+369	gawk '{print $1"_"$4}' clean-GWA-data.HG19.map >  snps-reference-and-rawdata
+370	\end{lstlisting}
+371	  and
+372	\begin{lstlisting}[language=bash, frame=none]
+373	sort snps-reference.txt | uniq >> snps-reference-and-rawdata
+374	\end{lstlisting}
+375	  To get only those SNPs that are in both the target set and reference
+376	  set:
+377	\begin{lstlisting}[language=bash, frame=none]
+378	sort snps-reference-and-rawdata | uniq -d | gawk -F "_" '{$3=$2+1; print $1,$2,$3,"R"NR}' > snps-reference-and-rawdata-duplicates
+379	\end{lstlisting}
+380	\item The names of the SNPs that are in both the target set and in the
+381	  reference set need to be extracted from the target set. Using PLINK
+382	  this can be done by:
+383	\begin{lstlisting}[language=bash, frame=none]
+384	plink --noweb --file clean-GWA-data.HG19 --extract snps-reference-and-rawdata-duplicates --range --make-bed --out clean-GWA-data.HG19.for-impute.plink
+385	\end{lstlisting}
+386	\item The target set to impute should be transposed and split per
+387	  chromosome in order to create the input file for imputations. This
+388	  can be done with PLINK:
+389	\begin{lstlisting}[language=bash, frame=none]
+390	for i in `seq 1 22`; do
+391	 plink --bfile clean-GWA-data.HG19.for-impute.plink --chr ${i} --missing-genotype ? --transpose --recode --out clean-GWA-data.HG19.for-impute.plink.chr${i};
+392	done
+393	\end{lstlisting}
+394	\item The PLINK objects have to be converted into input files in Beagle
+395	  format:
+396	 \begin{lstlisting}[language=bash, frame=none]
+397	for i in `seq 1 22`; do
+398	 gawk '{$1="M"; $3=""; $4=""; print $0}' clean-GWA-data.HG19.for-impute.plink.chr${i}.tped > clean-GWA-data.HG19.for-impute.plink.chr${i}.bgl;
+399	done
+400	\end{lstlisting}
+401	\end{boenumerate}
+402	
+403	\subsubsection*{Imputation with Beagle (TIMING $\sim$50 hours per
+404	  \num{10000} markers)}
+405	\addcontentsline{toc}{subsubsection}{Imputation with Beagle}
+406	\begin{boenumerate}
+407	\setcounter{enumi}{15}
+408	\item Impute all chromosomes using the following commands:
+409	\begin{lstlisting}[language=bash, frame=none]
+410	for i in `seq 1 22`; do
+411	 java -jar beagle.jar unphased=clean-GWA-data.HG19.for-impute.plink.chr${i}.bgl phased=reference-1KG-beagle/ALL.chr${i}.phase1_release_v3.20101123.filt.bgl.gz markers=reference-1KG-beagle/ALL.chr${i}.phase1_release_v3.20101123.filt.markers missing=? out=clean-GWA-data.HG19.for-impute.plink.chr${i};
+412	done
+413	\end{lstlisting}
+414	? TROUBLESHOOTING
+415	\end{boenumerate}
+416	
+417	%%% Local Variables:
+418	%%% mode: latex
+419	%%% TeX-master: "MethodologyPaper_GoNLimpute"
+420	%%% End:

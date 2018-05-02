@@ -1,0 +1,2 @@
+sed -e "s/,//t/g" < Goat3copy.ped > Goat3copy_now_shortspaced.ped
+
