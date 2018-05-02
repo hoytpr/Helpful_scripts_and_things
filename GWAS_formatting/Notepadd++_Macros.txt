@@ -1,0 +1,11 @@
+Use notepad to replace spaces with tabs:
+
+Files may have many spaces or only one between entries
+Have a macro that searches for four spaces and replace with one
+	do three timess
+Replace three spaces with one
+	Do three times
+Repace two spaces with one
+	Do three times
+Replace all single spaces with tabs
+Done!
