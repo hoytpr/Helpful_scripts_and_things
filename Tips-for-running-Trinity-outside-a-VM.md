@@ -52,7 +52,7 @@ worked.
 
 7\. Keep your fastq filenames with the suffix ".fq"
 
-8\. Your server may or may not have IGV installed. If not, ask them to install it, or intall it on your desktop and download the files you need 
+8\. Your server may or may not have IGV installed. If not, ask them to install it, or install it on your desktop and download the files you need 
 
 ("accepted_hits.bam, trinity_gmap.sorted.bam, <your_genome_reference_file.fa>, and either the <your_genome_reference_file.bed> or <your_genome_reference_file.gff>") 
 
