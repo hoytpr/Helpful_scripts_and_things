@@ -16,9 +16,9 @@ What is **important** to know is re-running the steps will *NOT* overwrite all o
 
 So... *exactly* as Brian says: "running abundance estimation is not being done against a single Trinity assembly. If you made separate assemblies for each condition, you'll want to create a single assembly from the combined reads". In other words *completely delete* old "trinity-<samplename>" and "<samplename>.RSEM" folders, and start over: go back to STEP 1 "De novo assembly of reads using Trinity". 
 
-If you do not delete the old "<samplename>.RSEM" folders. the existing <samplename>.isoforms.results.ok" file will prevent the the existing xxx.isoforms.results and xxx.genes.results files from being overwritten. The same appears to be true for the <samplename>.bowtie.bam.ok" file and the associated <samplename>.bowtie.bam file in the RSEM output directories. (Brian please corect me if this is wrong).
+If you do not delete the old "<samplename>.RSEM" folders. the existing <samplename>.isoforms.results.ok" file will prevent the the existing xxx.isoforms.results and xxx.genes.results files from being overwritten. The same appears to be true for the <samplename>.bowtie.bam.ok" file and the associated <samplename>.bowtie.bam file in the RSEM output directories. (Brian please correct me if this is wrong).
 
-3\. If you are not running the VM, the packages Trinity, bowtie, Tophat etc. may be in different directories on the server (another good reason to  use the VM). Our server sets up modules for queue submission, and sometimes you will need to load more than one module e.g.
+3\. If you are not running the VM, the packages Trinity, Bowtie, Tophat etc. may be in different directories on the server (another good reason to  use the VM). Our server sets up modules for queue submission, and sometimes you will need to load more than one module e.g.
 
     "module load trinity/2.1.1 bowtie2/2.2.6 tophat/2.0.12
     tophat -I 300 -i 20 genome \"
@@ -27,7 +27,7 @@ HOWEVER, At Step 1 "De novo assembly of reads using Trinity", do *not* load any 
 
 "Error, cannot find path to bowtie () or bowtie-build (), which is now needed as part of Chrysalis' read scaffolding step.  If you should choose to not run bowtie, include the --no_bowtie in your Trinity command."
 
-4\. (Not reccommended) If you feel you must redirect the output from Trinity to a different folder than the STDOUT, the output file must have "trinity" in the outputname to prevent an error, e.g. use "/Applications/Trinity/trinitytest" instead of "/Applications/Trinity/test".
+4\. (Not recommended) If you feel you must redirect the output from Trinity to a different folder than the STDOUT, the output file must have "trinity" in the outputname to prevent an error, e.g. use "/Applications/Trinity/trinitytest" instead of "/Applications/Trinity/test".
 
 5\. The perl scripts (e.g. "analyze_diff_expr.pl") require linux end-of-line handling. Any perl script or other file pulled off the server into a Windows GUI, should be reformatted when back on the server using e.g. dos2unix. EOL errors may be similar to: 
 
