@@ -2,7 +2,7 @@
 
 To increase the total number of reads per sample, 
 it is common to run samples multiple times in separate runs on the Illumina NextSeq500. 
-The outputs are different folders with filenames are the exact same 
+The outputs are different folders with filenames that are the exactly the same 
 (unless there are changes made to the "SampleSheet.csv").
 The NextSeq500 flowcell has a single flowcell, with four interconnected regions that are 
 called "Lanes" which is confusing when compared to other Illumina Instruments
