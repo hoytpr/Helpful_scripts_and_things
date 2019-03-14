@@ -2,7 +2,8 @@
 
 To increase the total number of reads per sample, 
 it is common to run samples multiple times in separate runs on the Illumina NextSeq500. 
-The output filenames are the exact same (unless there are changes made to the "SampleSheet.csv"
+The outputs are different folders with filenames are the exact same 
+(unless there are changes made to the "SampleSheet.csv").
 The NextSeq500 flowcell has a single flowcell, with four interconnected regions that are 
 called "Lanes" which is confusing when compared to other Illumina Instruments
 that have multiple Lanes that can be run independently and with separate samples.
@@ -29,23 +30,23 @@ done
 ## Expaining the script
 
 `for fpath in run1/*.fastq.gz; do`
-# defines the fpath variable giving it essentially a value 
-# until it runs out of run1/*.fastq.gz files in the run1 directory
+defines the fpath variable giving it essentially a value 
+until it runs out of run1/*.fastq.gz files in the run1 directory
 
 `    f=${fpath##*/}`
-# this is parameter expansion that defines "f" as the $fpath filename 
-# deleting the run directory from the filenames (iterates through the filenames)
-# although it looks like it is removing filenames leaving only the suffix
-# it really isn't as the "/" character shows it's removing the characters of 
-# run1/*fastq.gz up to and including the directory separator "/" leaving *fastq.gz.
-# Thus, "f" (or $f) becomes the filenames. 
+this is parameter expansion that defines "f" as the $fpath filename 
+deleting the run directory from the filenames (iterates through the filenames)
+although it looks like it is removing filenames leaving only the suffix
+it really isn't as the "/" character shows it's removing the characters of 
+run1/*fastq.gz up to and including the directory separator "/" leaving *fastq.gz.
+Thus, "f" (or $f) becomes the filenames. 
 
 `    cat run*/${f} > concatenated/${f}`
-# this concatenates any file with the same name `${f}` in any folders 
-# named run* (below the current directory) and outputs the concatenated 
-# files to the concatenated directory with the same name
-# in this case, if any folders had names that were different from the filenames 
-# in the run1 folder, they would be skipped.
+this concatenates any file with the same name `${f}` in any folders 
+named run* (below the current directory) and outputs the concatenated 
+files to the concatenated directory with the same name
+in this case, if any folders had names that were different from the filenames 
+in the run1 folder, they would be skipped.
 
 `done`
 Finished.
@@ -65,13 +66,13 @@ Evan helped create a more robust version shown below.
 
 Here Evan went beyond my scripting skills, so this is mostly his words, not mine. 
 When you can’t be sure that all the same files exist in every directory
-all the files need to be in order so that files are concatenated in the right order
+all the files need to be in order so that files are concatenated in the right order.
 
-dirs=(run1, run2, run3, ...)  # some ordered list of directory names
+`dirs=(run1, run2, run3, ...)`  <== some ordered list of directory names
 
 Then make sure the concatenated directory exists and is empty since we're only 
 using the append ">>" operator
-
+```
 [[ -d concatenated ]] && rm -rf concatenated
 mkdir concatenated
 for d in ${dirs[@]}; do
@@ -81,12 +82,12 @@ for d in ${dirs[@]}; do
     done
     popd
 done
-
+```
 If you want to add a suffix onto the concatenated files, this should do the trick:
 
-f_suffix=${f/.fastq.gz/_all.fastq.gz}
+`f_suffix=${f/.fastq.gz/_all.fastq.gz}`
 
-Then use ${f_suffix} as your output file in the concatenated directory.
+Then use `${f_suffix}` as your output file in the concatenated directory.
 
 ## Thanks Evan!
 
