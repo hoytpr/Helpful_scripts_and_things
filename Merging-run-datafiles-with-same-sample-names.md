@@ -14,7 +14,7 @@ Read1 and for Read2 (usually identified by "R1" and "R2" respectively) for each 
 But when multiple runs create separate folders, each containing files with 
 identical names, they also have to be concatenated together. The following script 
 was written by Evan Linde after I spent a couple days trying to figure this out.
-It's posted here with some explainations for what the lines are doing.
+It's posted here with some explanations for what the lines are doing.
 
 ## The Script
 
@@ -27,33 +27,34 @@ done
 ```
 ----------------------------------
 
-## Expaining the script
+## Explaining the script
 
 `for fpath in run1/*.fastq.gz; do`
-defines the fpath variable giving it essentially a value 
-until it runs out of run1/*.fastq.gz files in the run1 directory
+defines the `fpath` variable giving it essentially a value 
+until it runs out of `run1/*.fastq.gz` files in the run1 directory
 
 `    f=${fpath##*/}`
-this is parameter expansion that defines "f" as the $fpath filename 
-deleting the run directory from the filenames (iterates through the filenames)
-although it looks like it is removing filenames leaving only the suffix
-it really isn't as the "/" character shows it's removing the characters of 
-run1/*fastq.gz up to and including the directory separator "/" leaving *fastq.gz.
-Thus, "f" (or $f) becomes the filenames. 
+this is parameter expansion that defines "f" as the `$fpath` filename 
+deleting the `run/` directory from the filenames (iterating through the filenames).
+Although it looks like it might remove filenames leaving only the suffix
+it doesn't as the "/" character shows it's removing the characters of 
+`run1/*fastq.gz` up to and including the directory separator "/" leaving *`fastq.gz`.
+Thus, "f" (or `$f`) becomes the filenames. 
 
 `    cat run*/${f} > concatenated/${f}`
 this concatenates any file with the same name `${f}` in any folders 
-named run* (below the current directory) and outputs the concatenated 
+named `run*` (below the current directory) and outputs the concatenated 
 files to the concatenated directory with the same name
 in this case, if any folders had names that were different from the filenames 
 in the run1 folder, they would be skipped.
 
 `done`
 Finished.
+
 It seems pretty simple, but without parameter expansion is more tricky 
-than one might think. Because I wanted to do this on a Windows-based system
-(the NextSeq uses Windows 7 and a "mapped" remote drive), it needed to be done
-in a GitBash terminal or CygWin terminal. This essentially prevents me from 
+than one might think. Because this needs to be done on a Windows-based system
+(the NextSeq uses Windows 7 and a "mapped" remote drive), it has to use
+a GitBash terminal or CygWin terminal. This essentially prevents me from 
 asking questions on StackOverflow, where I often lurk when doing scripting.
 
 ## Caveats
