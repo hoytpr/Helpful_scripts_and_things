@@ -44,8 +44,8 @@ Thus, "f" (or `$f`) becomes the filenames.
 `    cat run*/${f} > concatenated/${f}`
 this concatenates any file with the same name `${f}` in any folders 
 named `run*` (below the current directory) and outputs the concatenated 
-files to the concatenated directory with the same name
-in this case, if any folders had names that were different from the filenames 
+files to the concatenated directory with the same filename.
+In this case, if any folders had names that were different from the filenames 
 in the run1 folder, they would be skipped.
 
 `done`
