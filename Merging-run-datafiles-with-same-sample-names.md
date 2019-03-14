@@ -53,7 +53,7 @@ Finished.
 
 It seems pretty simple, but without parameter expansion is more tricky 
 than one might think. Because this needs to be done on a Windows-based system
-(the NextSeq uses Windows 7 and a "mapped" remote drive), it has to use
+(the NextSeq uses Windows 7 and a "mapped" remote drive to stream the sequence data), it has to use
 a GitBash terminal or CygWin terminal. This essentially prevents me from 
 asking questions on StackOverflow, where I often lurk when doing scripting.
 
