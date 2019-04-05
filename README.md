@@ -6,3 +6,4 @@ Scripts I write (or sometimes partially steal but try to give credit) that help 
 3. [Tips for running Trinity outside a VM](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/Tips-for-running-Trinity-outside-a-VM.md)
 4. [Doing some simple column formatting gymnastics to help reformat .map and .ped files (and others) for GWAS with PLINK]( https://github.com/hoytpr/Helpful_scripts_and_things/tree/master/GWAS_formatting)
 5. [Merging sequencer run data after multiple runs give output data with the same name](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/Merging-run-datafiles-with-same-sample-names.md)
+6. [Old Perl script converting raw 3730 seq files to fasta files](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/3730_reads2fasta/seq2fasta.md)
