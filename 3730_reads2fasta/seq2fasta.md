@@ -9,3 +9,5 @@ Perl that actually worked, albeit under specific circumstances.
 My original name was "Best9" and then it was ingloriously changed to "FinalPH-SeqFiles2MultiFasta.pl"
 which was finally changed to "SeqFiles2MultiFasta.pl" after getting over myself and my accomplishment.
 It was an interesting journey. Maybe I'll write about it someday.
+
+Download it [HERE](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/3730_reads2fasta/SeqFiles2MultiFasta.pl)
