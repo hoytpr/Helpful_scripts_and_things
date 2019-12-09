@@ -58,7 +58,7 @@ It is very likely that
     
     perl -i.bk -wpe's/^>.* />/' your_xmfa_file.xmfa
 
-Will work just as well. The next step is to [infer clonal geneology]  (https://github.com/xavierdidelot/ClonalOrigin/wiki/Usage#infer-clonal-genealogy)
+Will work just as well. The next step is to [infer clonal geneology](https://github.com/xavierdidelot/ClonalOrigin/wiki/Usage#infer-clonal-genealogy)
 which will take several days of compute time, and leave you with a consensus tree.
 
 If you find some of your `warg` jobs are running slow, see my additional thoughts on [Thoughts_about_slow_`warg`_jobs](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/Notes-and-thoughts.md)
