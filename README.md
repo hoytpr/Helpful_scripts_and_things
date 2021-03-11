@@ -8,5 +8,5 @@ Scripts I write (or sometimes partially steal but try to give credit) that help 
 5. [Merging Illumina sequencer run data after multiple runs to give output data with the same name](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/Merging-run-datafiles-with-same-sample-names.md)
 6. [Old Perl script converting raw 3730 seq files to fasta files](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/3730_reads2fasta/seq2fasta.md)
 7. Some oneliners Like 
-8.    [Removing the `>ref|` from the header lines of NCBI downloaded genome files](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/oneliners/removing-ref-from-ncbi-fasta-files.md)
-9.    [Changing file extensions recursively](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/oneliners/New-HPC-scheduler-pbs2sbatch.md)
+    8.    [Removing the `>ref|` from the header lines of NCBI downloaded genome files](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/oneliners/removing-ref-from-ncbi-fasta-files.md)
+    9.    [Changing file extensions recursively](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/oneliners/New-HPC-scheduler-pbs2sbatch.md)
