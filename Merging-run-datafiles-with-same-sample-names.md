@@ -29,13 +29,21 @@ done
 
 ## Explaining the script
 
+Start with an empty directory, and two subdirectories named "run1" and "run2".
+Copy all the datafiles from the first run into the "run1" directory. 
+Copy all the datafiles from the second run into the "run2" directory.
+The script will create a new directory named "concatenated" at the same level as 
+the "run1" and the "run2" directories. The "concatenated" directory will hold all the combined 
+reads for each sample for both runs 1 and 2. 
+
+### oversimplistic description
 `for fpath in run1/*.fastq.gz; do`
-defines the `fpath` variable giving it essentially a value 
+defines the `fpath` variable giving it essentially a new value 
 until it runs out of `run1/*.fastq.gz` files in the run1 directory
 
 `    f=${fpath##*/}`
 this is parameter expansion that defines "f" as the `$fpath` filename 
-deleting the `run/` directory from the filenames (iterating through the filenames).
+after deleting the `run/` directory from the filenames (iterating through the filenames).
 Although it looks like it might remove filenames leaving only the suffix
 it doesn't as the "/" character shows it's removing the characters of 
 `run1/*fastq.gz` up to and including the directory separator "/" leaving *`fastq.gz`.
