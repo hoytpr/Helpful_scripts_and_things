@@ -10,3 +10,5 @@ Scripts I write (or sometimes partially steal but try to give credit) that help 
 7. Some oneliners Like 
     -   [Removing the `>ref|` from the header lines of NCBI downloaded genome files](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/oneliners/removing-ref-from-ncbi-fasta-files.md)
     -    [Changing file extensions recursively](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/oneliners/New-HPC-scheduler-pbs2sbatch.md)
+    -   [Proper or improved use of `grep` with big files on an HPC](https://github.com/hoytpr/Helpful_scripts_and_things/blob/master/oneliners/using-grep-on-big-files-on-an-HPC.md)
+	
